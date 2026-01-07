@@ -125,10 +125,19 @@ export class Service{
     }
 
     getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
-            fileId
-        )
+        // Return a direct file *view* URL that can be used as an <img> src.
+        // The Appwrite SDK method returns a Promise/response which is not
+        // directly usable as an image src — so expose a sync URL here that
+        // points to the storage view endpoint. This keeps components simple.
+        return this.getFileView(fileId);
+    }
+
+    // Construct a public URL to view the file. This works for buckets
+    // where files are accessible via the HTTP API (CORS/permissions apply).
+    getFileView(fileId){
+        if (!fileId) return null;
+        // Example: {endpoint}/storage/buckets/{bucketId}/files/{fileId}/view
+        return `${conf.appwriteUrl.replace(/\/+$/,'')}/storage/buckets/${conf.appwriteBucketId}/files/${fileId}/view?project=${conf.appwriteProjectId}`;
     }
 }
 

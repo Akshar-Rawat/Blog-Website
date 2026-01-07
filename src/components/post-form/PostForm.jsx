@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -18,6 +18,17 @@ export default function PostForm({ post }) {
 
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
+  const [localPreview, setLocalPreview] = useState(null);
+  const previewRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewRef.current) {
+        URL.revokeObjectURL(previewRef.current);
+        previewRef.current = null;
+      }
+    };
+  }, []);
 
   const submit = async (data) => {
     // Check if user is logged in
@@ -129,12 +140,32 @@ export default function PostForm({ post }) {
           className="mb-4"
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", { required: !post })}
+          onChange={(e) => {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+              const url = URL.createObjectURL(file);
+              setLocalPreview(url);
+              // keep latest object URL to revoke it later
+              if (previewRef.current && previewRef.current !== url) {
+                URL.revokeObjectURL(previewRef.current);
+              }
+              previewRef.current = url;
+            } else {
+              if (previewRef.current) {
+                URL.revokeObjectURL(previewRef.current);
+                previewRef.current = null;
+              }
+              setLocalPreview(null);
+            }
+          }}
         />
-        {post && (
+
+        {/* Show local preview if a file is selected, otherwise show the existing post image (if any) */}
+        {(localPreview || post) && (
           <div className="w-full mb-4">
             <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
-              alt={post.title}
+              src={localPreview || appwriteService.getFileView(post?.featuredImage)}
+              alt={post?.title || "preview"}
               className="rounded-lg"
             />
           </div>
