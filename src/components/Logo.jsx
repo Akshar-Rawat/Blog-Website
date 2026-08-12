@@ -1,8 +1,15 @@
 import React from 'react'
-import logo from '../assets/logo.svg'  
+
 function Logo({width = '100px'}) {
   return (
-    <img src={logo} alt="ByteLog Logo" width={width} /> 
+    <span
+      className="font-display font-bold tracking-tight select-none"
+      style={{ fontSize: width === '100%' ? '1.5rem' : '1.25rem' }}
+    >
+      <span className="text-cyan">◆</span>
+      <span className="text-chalk ml-1">Byte</span>
+      <span className="text-mist">Log</span>
+    </span>
   )
 }
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import './App.css'
 import authService from "./appwrite/auth"
 import {login, logout} from "./store/authSlice"
 import { Footer, Header } from './components'
@@ -23,16 +22,18 @@ function App() {
   }, [])
   
   return !loading ? (
-    <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
-      <div className='w-full block'>
-        <Header />
-        <main>
-         <Outlet />
-        </main>
-        <Footer />
-      </div>
+    <div className='min-h-screen flex flex-col bg-ink'>
+      <Header />
+      <main className='flex-1'>
+       <Outlet />
+      </main>
+      <Footer />
     </div>
-  ) : null
+  ) : (
+    <div className="min-h-screen flex items-center justify-center bg-ink">
+      <div className="loading-spinner"></div>
+    </div>
+  )
 }
 
 export default App

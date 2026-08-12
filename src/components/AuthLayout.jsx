@@ -19,6 +19,9 @@ export default function Protected({children, authentication = true}) {
         setLoader(false)
     }, [authStatus, navigate, authentication])
 
-  return loader ? <h1>Loading...</h1> : <>{children}</>
+  return loader ? (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="loading-spinner"></div>
+    </div>
+  ) : <>{children}</>
 }
-

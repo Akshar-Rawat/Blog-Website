@@ -107,17 +107,17 @@ export default function PostForm({ post }) {
   }, [watch, slugTransform, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
-      <div className="w-2/3 px-2">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap gap-y-6">
+      <div className="w-full lg:w-2/3 lg:pr-6">
         <Input
-          label="Title :"
-          placeholder="Title"
+          label="Title"
+          placeholder="Your post title"
           className="mb-4"
           {...register("title", { required: true })}
         />
         <Input
-          label="Slug :"
-          placeholder="Slug"
+          label="Slug"
+          placeholder="auto-generated-slug"
           className="mb-4"
           {...register("slug", { required: true })}
           onInput={(e) => {
@@ -127,62 +127,62 @@ export default function PostForm({ post }) {
           }}
         />
         <RTE
-          label="Content :"
+          label="Content"
           name="content"
           control={control}
           defaultValue={getValues("content")}
         />
       </div>
-      <div className="w-1/3 px-2">
-        <Input
-          label="Featured Image :"
-          type="file"
-          className="mb-4"
-          accept="image/png, image/jpg, image/jpeg, image/gif"
-          {...register("image", { required: !post })}
-          onChange={(e) => {
-            const file = e.target.files && e.target.files[0];
-            if (file) {
-              const url = URL.createObjectURL(file);
-              setLocalPreview(url);
-              // keep latest object URL to revoke it later
-              if (previewRef.current && previewRef.current !== url) {
-                URL.revokeObjectURL(previewRef.current);
+      <div className="w-full lg:w-1/3">
+        <div className="bg-surface border border-slate rounded-xl p-5 space-y-5">
+          <Input
+            label="Featured Image"
+            type="file"
+            accept="image/png, image/jpg, image/jpeg, image/gif"
+            {...register("image", { required: !post })}
+            onChange={(e) => {
+              const file = e.target.files && e.target.files[0];
+              if (file) {
+                const url = URL.createObjectURL(file);
+                setLocalPreview(url);
+                // keep latest object URL to revoke it later
+                if (previewRef.current && previewRef.current !== url) {
+                  URL.revokeObjectURL(previewRef.current);
+                }
+                previewRef.current = url;
+              } else {
+                if (previewRef.current) {
+                  URL.revokeObjectURL(previewRef.current);
+                  previewRef.current = null;
+                }
+                setLocalPreview(null);
               }
-              previewRef.current = url;
-            } else {
-              if (previewRef.current) {
-                URL.revokeObjectURL(previewRef.current);
-                previewRef.current = null;
-              }
-              setLocalPreview(null);
-            }
-          }}
-        />
+            }}
+          />
 
-        {/* Show local preview if a file is selected, otherwise show the existing post image (if any) */}
-        {(localPreview || post) && (
-          <div className="w-full mb-4">
-            <img
-              src={localPreview || appwriteService.getFileView(post?.featuredImage)}
-              alt={post?.title || "preview"}
-              className="rounded-lg"
-            />
-          </div>
-        )}
-        <Select
-          options={["active", "inactive"]}
-          label="Status"
-          className="mb-4"
-          {...register("status", { required: true })}
-        />
-        <Button
-          type="submit"
-          bgColor={post ? "bg-green-500" : undefined}
-          className="w-full"
-        >
-          {post ? "Update" : "Submit"}
-        </Button>
+          {/* Show local preview if a file is selected, otherwise show the existing post image (if any) */}
+          {(localPreview || post) && (
+            <div className="w-full rounded-lg overflow-hidden border border-slate">
+              <img
+                src={localPreview || appwriteService.getFileView(post?.featuredImage)}
+                alt={post?.title || "preview"}
+                className="w-full object-cover"
+              />
+            </div>
+          )}
+          <Select
+            options={["active", "inactive"]}
+            label="Status"
+            {...register("status", { required: true })}
+          />
+          <Button
+            type="submit"
+            variant={post ? "success" : "primary"}
+            className="w-full"
+          >
+            {post ? "Update post" : "Publish post"}
+          </Button>
+        </div>
       </div>
     </form>
   );

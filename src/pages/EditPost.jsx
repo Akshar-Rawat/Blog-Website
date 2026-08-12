@@ -20,12 +20,22 @@ function EditPost() {
         }
     }, [slug, navigate])
   return post ? (
-    <div className='py-8'>
+    <div className='py-12 sm:py-16'>
         <Container>
+            <div className="mb-8">
+                <h1 className="font-display text-3xl font-bold tracking-tight text-chalk">
+                    Edit Post
+                </h1>
+                <div className="hero-underline w-16 mt-3"></div>
+            </div>
             <PostForm post={post} />
         </Container>
     </div>
-  ) : null
+  ) : (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="loading-spinner"></div>
+    </div>
+  )
 }
 
 export default EditPost
